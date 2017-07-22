@@ -1,0 +1,605 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<head>
+<title>Home Control</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=0" /> 
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<link rel="shortcut icon" href="favicon.ico" />
+		<link rel="apple-touch-icon" href="iphone-icon.png"/>
+		<link rel="icon" sizes="196x196" href="logo.png">
+		<link rel="icon" sizes="192x192" href="logo192.png">
+		<link rel="stylesheet" media="(orientation: portrait)" href="portrait.css">
+		<link rel="stylesheet" media="(orientation: landscape)" href="landscape.css">
+		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+
+<script language="JavaScript" type="text/JavaScript">
+<!--
+<!--
+
+var minutes=0;
+var notificationtime=0;
+var notificationrunning=0;
+var highhumidity=0;
+var devicestodisplay =[45,44,833,273,134,35,136,140];
+var nod=0;
+var domoticzurl="192.168.1.163";
+var domoticzport="8080";
+
+function MM_goToURL() { //v3.0
+  var i, args=MM_goToURL.arguments; document.MM_returnValue = false;
+  for (i=0; i<(args.length-1); i+=2) eval(args[i]+".location='"+args[i+1]+"'");
+}
+function speak(textToSpeak) {
+   // Create a new instance of SpeechSynthesisUtterance
+   var newUtterance = new SpeechSynthesisUtterance();
+
+   // Set the text
+   newUtterance.text = textToSpeak;
+
+   // Add this text to the utterance queue
+   window.speechSynthesis.speak(newUtterance);
+}
+
+function getalldevices(){
+fLen = devicestodisplay.length;
+for (i = 0; i < fLen; i++) {
+	preparediv(devicestodisplay[i]);
+	getdevice(devicestodisplay[i]);
+	}
+}
+
+function getdevice(idx){
+	console.log("getting device idx" + idx);
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://"+domoticzurl+":"+domoticzport+"/json.htm?username=YW50aGVh&password=YmlhbmNh&type=devices&rid="+idx;
+	xmlhttp.onreadystatechange = function() {
+		console.log(devicestodisplay[i] + "   " +xmlhttp.readyState)
+		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+			var myArr = JSON.parse(xmlhttp.responseText);
+	   		devicename = myArr.result[0].Name;
+			devicestatus = myArr.result[0].Status;
+	   		console.log(devicename + "(" + devicestatus+")");
+			adddevice(idx,devicename,devicestatus);
+			}
+		}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+function preparediv(deviceidx){
+nod=nod+1;
+var div = document.createElement("div");
+div.className = 'devicecontainer';
+div.id = "DEVICE"+deviceidx;
+document.getElementById("devicesdiv").appendChild(div);
+}
+
+function updatealldevices(){
+fLen = devicestodisplay.length;
+for (i = 0; i < fLen; i++) {
+	updatedevice(devicestodisplay[i]);
+	}
+}
+
+
+
+function adddevice(deviceidx,devicenametext,devicestatus){
+nod=nod+1;
+var div = document.createElement("div");
+//div.style.width = "100px";
+//div.style.height = "100px";
+//div.style.background = "red";
+//div.style.color = "white";
+div.className = 'devicecontainer';
+div.innerHTML = devicenametext;
+div.id = "DEVICE"+deviceidx;
+console.log("-------------"+div.id);
+//document.getElementById("devicesdiv").appendChild(div);
+document.getElementById(div.id).addEventListener('click', function() {
+ { toggle(deviceidx); };
+}, false);
+}
+
+
+function groupoff(group){
+	execute('PUT', 'http://192.168.1.73/api/newdeveloper/groups/'+group+'/action', '{"on":false}');
+}
+
+function switchon(devicecode){
+	execute('PUT', 'http://192.168.1.163:8080/json.htm?username=YW50aGVh&password=YmlhbmNh&type=command&param=switchlight&idx='+devicecode+'&switchcmd=On', '');
+}
+
+function switchoff(devicecode){
+	execute('PUT', 'http://192.168.1.163:8080/json.htm?username=YW50aGVh&password=YmlhbmNh&type=command&param=switchlight&idx='+devicecode+'&switchcmd=Off', '');
+}
+
+function toggle(devicecode){
+	execute('PUT', 'http://192.168.1.163:8080/json.htm?username=YW50aGVh&password=YmlhbmNh&type=command&param=switchlight&idx='+devicecode+'&switchcmd=Toggle', '');
+}
+
+function dim(devicecode,dimlevel){
+	execute('PUT', 'http://192.168.1.163:8080/json.htm?username=YW50aGVh&password=YmlhbmNh&type=command&param=switchlight&idx='+devicecode+'&switchcmd=Set%20Level&level='+dimlevel, '');
+}
+
+function lightoff(light){
+	execute('PUT', 'http://192.168.1.73/api/newdeveloper/lights/'+light+'/state', '{"on":false}');
+}
+
+function lightmax(light){
+	execute('PUT', 'http://192.168.1.73/api/newdeveloper/lights/'+light+'/state', '{"on":true,"bri":255,"sat":0,"hue":0}');
+}
+
+function briup(group){
+	execute('PUT', 'http://192.168.1.73/api/newdeveloper/groups/'+group+'/action', '{"bri_inc":40}');
+}
+
+function bridn(group){
+	execute('PUT', 'http://192.168.1.73/api/newdeveloper/groups/'+group+'/action', '{"bri_inc":-40}');
+}
+
+function groupcontrol(group,hue,bri,sat){
+	execute('PUT', 'http://192.168.1.73/api/newdeveloper/groups/'+group+'/action', '{"on":true,"bri":'+bri+',"sat":'+sat+',"hue":'+hue+'}');
+}
+
+function scene(scenecode){
+	execute('PUT', 'http://192.168.1.73/api/newdeveloper/groups/0/action', '{"scene":"'+scenecode+'"}');
+}
+function groupmax(group){
+	execute('PUT', 'http://192.168.1.73/api/newdeveloper/groups/'+group+'/action', '{"on":true,"bri":255,"sat":0,"hue":0}');
+}
+
+function groupscene(group,scene){
+	execute('PUT', 'http://192.168.1.73/api/newdeveloper/groups/'+group+'/action', '{"scene":"'+scene+'"}');
+}
+
+function clearnotification(idx){
+	execute('PUT', "http://192.168.1.163:8080/json.htm?username=YW50aGVh&password=YmlhbmNh&type=command&param=updateuservariable&idx="+idx+"&vname=LastEvent&vtype=2&vvalue=%00", '');
+}
+
+
+function execute($method,$url,$message){
+xmlhttp=new XMLHttpRequest();
+xmlhttp.open($method,$url,true)
+xmlhttp.send($message);
+}
+window.onload = function() {
+    // all of your code goes in here
+    // it runs after the DOM is built
+	hidescenespanel();
+	hidetimerpanel();
+	updatetemparea("outtemp","1101")
+	updatetemparea("intemp","255")	
+	refreshtimer();
+	getalldevices();
+	checkifnightmode();
+	updateambientlight();
+	updatenotification(11);
+	}
+	
+window.setInterval(function(){
+	updatealldevices();
+	updatenotification(11);
+	refreshtimer();
+	}, 1000);
+
+window.setInterval(function(){
+	updatetemparea("outtemp","1101")
+	updatetemparea("intemp","255")
+	}, 20000);
+
+	
+	
+function updatedevice(idx){
+	var location="DEVICE"+idx;
+	console.log("checking status of idx "+idx);
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://192.168.1.163:8080/json.htm?username=YW50aGVh&password=YmlhbmNh&type=devices&rid="+idx;
+	var onoff;
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			onoff = myArr.result[0].Status;
+			devicename = myArr.result[0].Name;
+       // myFunction(myArr);
+	   	document.getElementById(location).innerHTML='<div class="devicename">'+devicename+'</span>';
+    	}
+		if (onoff == "On") {
+		document.getElementById(location).className = "deviceon";
+		} 
+		if (onoff == "Off") {
+		document.getElementById(location).className = "deviceoff";
+		}
+		if (onoff == "Open") {
+		document.getElementById(location).style.background  = "deviceon";
+		} 
+		if (onoff == "Closed") {
+		document.getElementById(location).style.background = "deviceoff";
+		}
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+function updatenotification(idx){
+	console.log("checking status of idx "+idx)
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://192.168.1.163:8080/json.htm?username=YW50aGVh&password=YmlhbmNh&type=command&param=getuservariable&idx="+idx;
+	var textentry
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			textentry = myArr.result[0].Value;
+       // myFunction(myArr);
+    	
+		document.getElementById("notification").innerHTML = textentry;
+		}
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+function movetohousekeeper(){
+
+	var idx=273
+	console.log("checking to see if it is cleaning day "+idx)
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://192.168.1.163:8080/json.htm?username=YW50aGVh&password=YmlhbmNh&type=devices&rid="+idx;
+	var onoff
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			onoff = myArr.result[0].Status;
+       // myFunction(myArr);
+    	}
+		if (onoff == "On") {
+		window.location="becky.htm";
+		} else {
+		window.location="locked.htm";
+		}
+		
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+	function checkifnightmode(){
+
+	var idx=37
+	console.log("checking to see if it is night mode "+idx)
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://192.168.1.163:8080/json.htm?username=YW50aGVh&password=YmlhbmNh&type=devices&rid="+idx;
+	var onoff
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			onoff = myArr.result[0].Status;
+       // myFunction(myArr);
+    	}
+		if (onoff == "On") {
+    document.getElementById('nightactive').style.display = 'block';
+   
+		} else {
+		 document.getElementById('nightactive').style.display = 'none';
+		 }
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+	function checkiflocked(){
+
+	var idx=40
+	console.log("checking to see if leaving is on "+idx)
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://192.168.1.163:8080/json.htm?username=YW50aGVh&password=YmlhbmNh&type=devices&rid="+idx;
+	var onoff
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			onoff = myArr.result[0].Status;
+       // myFunction(myArr);
+    	}
+		if (onoff == "On") {
+		MM_goToURL('parent','locked.htm');	
+		} else {}
+		
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+function updateweather(){
+	var forecast
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://192.168.1.163:8080/json.htm?username=YW50aGVh&password=YmlhbmNh&type=devices&rid=51";
+	var forecast
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			forecast = myArr.result[0].ForecastStr;
+			document.getElementById("weatherstring").innerHTML =  forecast
+			console.log("Forecast is " + forecast + ".")
+       // myFunction(myArr);
+	   		if (forecast == "Partly Cloudy") {
+    			document.getElementById('weatherdiv').style.backgroundImage= "url('assets/climate/weather-partlycloudy.png')";
+				}
+	   		if (forecast == "Sunny") {
+    			document.getElementById('weatherdiv').style.backgroundImage= "url('assets/climate/weather-sunny.png')";
+				}				
+			if (forecast == "Rain") {
+    			document.getElementById('weatherdiv').style.backgroundImage= "url('assets/climate/weather-rain.png')";
+				console.log("changed to rain image")
+				}	
+			if (forecast == "Fog") {
+    			document.getElementById('weatherdiv').style.backgroundImage= "url('assets/climate/weather-fog.png')";
+				}		
+			if (forecast == "Snow") {
+    			document.getElementById('weatherdiv').style.backgroundImage= "url('assets/climate/weather-snow.png')";
+				}
+			if (forecast == "Cloudy") {
+    			document.getElementById('weatherdiv').style.backgroundImage= "url('assets/climate/weather-cloudy.png')";
+				}			
+			}
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+setTimeout(updateweather,60000);
+//<div align="center" class="weatherimagecontainer" id="weatherdiv"><div id="weatherstring" class="weathertext">Forecast</div></div>
+}
+
+function updateenergy(){
+	var forecast
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://192.168.1.163:8080/json.htm?username=YW50aGVh&password=YmlhbmNh&type=devices&rid=650";
+	var forecast
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			forecast = myArr.result[0].Usage;
+			console.log("Energy Usage is  " + forecast + ".")
+       // myFunction(myArr);
+    		document.getElementById("energytext").innerHTML =  forecast;
+			}
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+
+setTimeout(updateenergy,10000);
+}
+
+function myFunction(arr) {
+    var out = "";
+    out += arr[0].result.Status;
+    document.getElementById("id01").innerHTML = out;
+}
+function updateClock() {
+    var now = new Date(), // current date
+		timetext = checkTime(now.getHours()) + ':' + checkTime(now.getMinutes()); // again, you get the idea
+    // set the content of the element with the ID time to the formatted string
+    document.getElementById("clockdisplay").innerHTML = timetext;
+    // call this function again in 1000ms
+		setTimeout(updateClock,1000);
+}
+
+function checkTime(i) {
+    if (i<10) {i = "0" + i};  // add zero in front of numbers < 10
+    return i;
+}
+
+function refreshtimer(){
+
+	var idx=666
+	console.log("checking to see if timer is working "+idx)
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://192.168.1.163:8080/json.htm?username=YW50aGVh&password=YmlhbmNh&type=devices&rid="+idx;
+	var onoff
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			onoff = myArr.result[0].Status;
+			console.log("timer is "+onoff)
+       // myFunction(myArr);
+    	}
+		if (onoff == "On") {
+			updatetimer();
+			}
+		if (onoff == "Off") {
+			document.getElementById("timerstatus").innerHTML = '-';
+		}
+		
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+function updatetimer(){
+	var timerstatus
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://192.168.1.163:8080/json.htm?username=YW50aGVh&password=YmlhbmNh&type=command&param=getuservariable&idx=14";
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			outstatus = myArr.result[0].Value;
+			document.getElementById("timerstatus").innerHTML = outstatus + 'm'
+    	}
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+
+function settimer(minutes){
+setminutes = minutes
+	ticker=0
+}
+
+function starttimer(minutes) {
+	execute('PUT', 'http://192.168.1.163:8080/json.htm?username=YW50aGVh&password=YmlhbmNh&type=command&param=updateuservariable&idx=14&vname=Timer&vtype=Integer&vvalue=' + minutes, '');
+	switchon(666);
+	speak("Timer set for " + minutes + "minutes and is now running.");
+	ticker=0;
+}
+
+function addminutes(addmin) {
+	minutes=minutes+addmin;
+    document.getElementById('minutestostart').innerHTML= minutes;
+}
+
+
+function timercancel(){
+	execute('PUT', 'http://192.168.1.163:8080/json.htm?username=YW50aGVh&password=YmlhbmNh&type=command&param=updateuservariable&idx=14&vname=Timer&vtype=Integer&vvalue=0', '');
+	switchoff(666);
+	speak("Timer cancelled.");
+	ticker=0;
+}
+
+function updateambientlight(){
+	var instatus
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://"+domoticzurl+":"+domoticzport+"/json.htm?username=YW50aGVh&password=YmlhbmNh&type=devices&rid=1683";
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			instatus = myArr.result[0].Data;
+			document.getElementById("ambientlight").innerHTML = instatus
+    	}
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+
+setTimeout(updateambientlight,20000);
+}
+
+function updatetemparea(divname,idxcode){
+	var instatus
+	var outstatus
+	var weatherstatus
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://192.168.1.163:8080/json.htm?username=YW50aGVh&password=YmlhbmNh&type=devices&rid="+idxcode;
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			temptext =  myArr.result[0].Temp;
+			humtext = myArr.result[0].Humidity;
+			console.log(outstatus)
+			document.getElementById(divname).innerHTML = temptext + "C  " + humtext + "%"
+    	}
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+function MM_callJS(jsStr) { //v2.0
+  return eval(jsStr)
+}
+
+function showadvancedpanel() {
+    document.getElementById('advancedpanel').style.display = 'block';
+}
+
+function hideadvancedpanel() {
+    document.getElementById('advancedpanel').style.display = 'none';
+}
+
+function showscenespanel() {
+    document.getElementById('scenespanel').style.display = 'block';
+}
+
+function showtimerpanel() {
+console.log("Showing timer panel");
+    document.getElementById('timerpanel').style.display = 'block';
+}
+
+function hidetimerpanel() {
+    document.getElementById('timerpanel').style.display = 'none';
+}
+
+function hidescenespanel() {
+    document.getElementById('scenespanel').style.display = 'none';
+}
+
+	
+//<div id="advancedpanel" align="center" class="popuppanel">
+//<div align="center" class="controlcontainer"><a href="javascript:;" onClick="toggle(45);document.getElementById('beep').play();"><img src="assets/icons/lighting-auto.png" width="128" height="128" border="0" id="lighting"></a>Lights Automation</div>
+//<div align="center" class="controlcontainer"><div align="center" class="dndframe"><a href="javascript:;" onClick="toggle(833)"><img src="assets/icons/dndon.png" width="128" height="128" hspace="5" vspace="5" border="0" id="donotdisturb"></a>Privacy</div></div>
+//<div align="center" class="controlcontainer"><a href="javascript:;" onClick="toggle(44);document.getElementById('beep').play();"><img src="assets/icons/environment-manual.png" width="128" height="128" hspace="0" vspace="0" border="0" id="environment"></a>Env. Automation</div>
+//<div align="center" class="controlcontainer"><a href="javascript:;" onClick="hideadvancedpanel();document.getElementById('beep').play();"><img src="assets/icons/close.png" width="128" height="128" hspace="0" vspace="0" border="0" id="environment"></a>Close</div>
+//</div>
+//<div align="center" class="menucontainer"><a href="javascript:;"><img src="assets/icons/otheroptions.png" width="128" height="128" onclick="showadvancedpanel();"></a>Advanced</div>
+//<div id="clockdisplay" align="center" class="clock">00:00</div> - put this in for a clock
+//<div align="center" class="clockcontainer"><div id="clockdisplay" class="clocktext">00:00</div></div>
+//-->
+</script>
+
+
+<body>
+
+<audio id="scene" src="assets/sounds/beep2.mp3" preload="auto"></audio>
+<div align="center" class="areatopbackground"></div>
+<div align="center" class="areatop">
+<a href="index.htm"><div class="iconon"><img src="assets/icons/home.png" width="100%" height="100%"></div></a>
+<a href="lights.htm"><div class="iconoff"><img src="assets/icons/lights.png" width="90%" height="90%"></div></a>
+<a href="devices.htm"><div class="iconoff"><img src="assets/icons/devices.png" width="90%" height="90%"></div></a>
+<a href="audiotrial.htm"><div class="iconoff"><img src="assets/icons/audio.png" width="90%" height="90%"></div></a>
+<a href="climate.htm"><div class="iconoff"><img src="assets/icons/climate.png" width="90%" height="90%"></div></a>
+<a href="security.htm"><div class="iconoff"><img src="assets/icons/security.png" width="90%" height="90%"></div></a>
+<a href="activities.htm"><div class="iconoff"><img src="assets/icons/more.png" width="90%" height="90%"></div></a>
+
+<div class="nightclock" id="nightactive">Night Mode<br><a href="javascript:;" onClick="switchoff(37)"><span id="title">Switch off Night Mode</span></a></div>
+</div>
+
+<div class="arealeft">
+<span class="screentitle">Home</span>
+<a href="javascript:;" onclick="showscenespanel();"><div align="center" class="largekeycontainer">Select scene</div></a>
+<div id="scenespanel" align="center" class="popuppanel">
+<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('MxMq2E03Zd1SJ3w');hidescenespanel();"><img src="assets/icons/chandelier.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
+<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('FUT5iH8zhXsuS4P');hidescenespanel();"><img src="assets/icons/television.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
+<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('1xKQFak84Z3LcPj');hidescenespanel();"><img src="assets/icons/projector.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
+<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('z8sScLoh9FVwCgN');hidescenespanel();"><img src="assets/icons/park.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
+<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('yUwt22w2837jhYN');hidescenespanel();"><img src="assets/icons/bookcase.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
+<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('Avy9HYLYdFXuUUe');hidescenespanel();"><img src="assets/icons/coffee-cup%20(1).png" width="10%" hspace="2%" vspace="2%" border="0"></a>
+<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('6mQcCzqNgSbtYM6');hidescenespanel();"><img src="assets/icons/cocktail.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
+<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('ZPMgkdVlI9dJtuy');hidescenespanel();"><img src="assets/icons/house.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
+<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('RnerEYy33JB4Gys');hidescenespanel();"><img src="assets/icons/supper.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
+<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);groupoff(1);hidescenespanel();"><img src="assets/icons/computer-energy.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
+<br><a href="javascript:;" onclick="hidescenespanel();"><span class="roomname">Close</span></a></div>
+<a href="javascript:;" onclick="document.getElementById('scene').play();switchon(263);"><div align="center" id="heatingcontrols" class="largekeycontainer">Heating boost 30min</div></a>
+
+<a href="javascript:;" onclick="showtimerpanel();addminutes(0);"><div align="center" class="standardcontainer" id="timerbox"><span class="title">Timer</span><br><span class="timertext" id="timerstatus" align="center">0m</span></div></a>
+<div id="timerpanel" align="center" class="popuppanel">
+<div id="minutestostart" class="timernow" align="center">0m</div>
+<a href="javascript:;" onclick="timercancel();hidetimerpanel();"><span class="lightroom">Cancel</span></a>
+<a href="javascript:;" onclick="starttimer(30);hidetimerpanel();"><span class="lightroom">30m</span></a>
+<a href="javascript:;" onclick="starttimer(45);hidetimerpanel();"><span class="lightroom">45m</span></a>
+<a href="javascript:;" onclick="starttimer(60);hidetimerpanel();"><span class="lightroom">60m</span></a>
+<a href="javascript:;" onclick="addminutes(-1);"><span class="lightroom">-1</span></a>
+<a href="javascript:;" onclick="addminutes(-10);"><span class="lightroom">-10</span></a>
+<a href="javascript:;" onclick="addminutes(10);"><span class="lightroom">+10</span></a>
+<a href="javascript:;" onclick="addminutes(1);"><span class="lightroom">+1</span></a>
+<a href="javascript:;" onclick="starttimer(minutes);hidetimerpanel();"><span class="lightroom">Start</span></a>
+<a href="javascript:;" onclick="hidetimerpanel();"><span class="lightroom">Close</span></a>
+</div>
+<div class="standardcontainer" id="huelux"><span class="title">Light level</span><br><span class="temptext" id="ambientlight" align="center">0 Lux</span></div>
+<div class="standardcontainer" id="humidity"><span class="title">Indoor</span><br><span class="temptext" id="intemp" align="center"> 0.0 C, 0%</span></div>
+<div align="center" class="standardcontainer"><span class="title">Outdoor</span><br><span class="temptext" id="outtemp" align="center"> 0.0C, 0%</span></div>
+
+<div align="center" id="heatingcontrols" class="standardcontainer"><span class="title">Kitchen</span><br><a href="javascript:;" onclick="document.getElementById('scene').play();dim(46,32);groupmax(17);"><span class="key">Max</span></a><a href="javascript:;" onclick="document.getElementById('scene').play();switchoff(46);groupoff(17);"><span class="key">Off</span></a></div>
+<div align="center" id="heatingcontrols" class="standardcontainer"><span class="title">Overheads</span><br><a href="javascript:;" onclick="document.getElementById('scene').play();groupmax(11);"><span class="key">Max</span></a><a href="javascript:;" onclick="document.getElementById('scene').play();groupoff(11);"><span class="key">Off</span></a></div>
+</div>
+<div class="arearight">
+	<span class="screentitle">Other devices</span>
+	<div id="devicesdiv"></div>
+</div>
+<div id="notification" align="center" class="notificationpane" onClick="clearnotification(11);"></div>
+</body>
+</html>

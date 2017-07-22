@@ -1,0 +1,373 @@
+body {
+
+	font-family: 'Raleway', sans-serif;
+	margin: 0 0 0 0;
+    padding: 0 0 0 0 ;
+	background: #000000;
+
+}
+
+
+
+.back-to-top {
+background: none;
+margin: 0;
+position: fixed;
+bottom: 50px;
+right: 20px;
+width: 150px;
+height: 50px;
+z-index: 100;
+display: none;
+text-decoration: none;
+}
+ 
+.back-to-top i {
+  font-size: 60px;
+}
+
+.timerselecttext {
+  font-size: 60px;
+  color:#FFFFFF;
+}
+
+.clockdisplay {
+  font-size: 300px;
+  color:grey;
+}
+
+div.clocktext {
+  font-size: 100px;
+  color:#000000;
+}
+
+div.weathertext {
+  font-size: 70px;
+  color:#000000;
+}
+
+
+div.standardcontainer {
+	background-color:grey;
+	position:relative;
+	width:25%;
+	height:25vh;
+	float:left;
+	padding-top:10px;
+	overflow:auto;
+	color:white;
+	font-size: 4vw;
+	text-align:center;
+	box-shadow:inset 0px 0px 0px 1px black;
+	opacity:0.9;
+}
+
+div.doublecontainer {
+	background-color:grey;
+	position:relative;
+	width:50%;
+	height:25vh;
+	float:left;
+	padding-top:10px;
+	overflow:auto;
+	color:white;
+	font-size: 4vw;
+	text-align:center;
+	box-shadow:inset 0px 0px 0px 1px black;
+}
+
+div.devicecontainer {
+	background-color:grey;
+	width:25%;
+	height:12vh;
+	float:left;
+	padding-top:10px;
+	overflow:auto;
+	color:white;
+	font-size: 2vw;
+	box-shadow:inset 0px 0px 0px 1px black;
+		opacity:0.9;
+}
+
+
+div.albumcontainer {
+
+	width:28vw;
+	height:28vw;
+	float:left;
+	padding-top:0px;
+	color:white;
+	font-size: 3vw;
+	box-shadow:inset 0px 0px 0px 1px black;
+
+}
+
+div.trackcontainer {
+	background:black;
+	width:70vw;
+	height:10vw;
+	float:left;
+	padding-top:0px;
+	color:white;
+	font-size: 3vw;
+	box-shadow:inset 0px 0px 0px 1px black;
+	opacity:1;
+}
+
+div.audiocontrols {
+	background-color:grey;
+	width:100vw;
+	height:10vw;
+	float:left;
+	padding-top:0px;
+	color:white;
+	font-size: 3vw;
+	box-shadow:inset 0px 0px 0px 1px black;
+	opacity:0.9;
+}
+
+div.audioactivitycontainer {
+	background:black;
+	width:70vw;
+	height:10vw;
+	float:left;
+	padding-top:0px;
+	color:white;
+	font-size: 3vw;
+	box-shadow:inset 0px 0px 0px 1px black;
+	opacity:1;
+}
+
+div.camera {
+	background-color:grey;
+	width:50vw;
+	float:left;
+	padding-top:0px;
+	color:white;
+	font-size: 3vw;
+}
+
+div.camcontrols {
+	background-color:green;
+	width:200px;
+	float:right;
+	padding-top:0px;
+	color:white;
+	font-size: 3vw;
+}
+
+span {
+	background-color: #ffffff; 
+	color: #75099b; 
+	font-size:20px;
+	display: inline-block; 
+	padding: 3px 10px; 
+	margin: 5px; 
+	font-weight: bold; 
+	border-radius: 5px;
+}
+
+div.nightclock {
+	background-color:#333333;
+	position:relative;
+	width:100%;
+	float:left;
+	padding-top:10px;
+	overflow:auto;
+	color:#666666;
+	font-size: 5vw;
+	text-align:center;
+	box-shadow:inset 0px 0px 0px 1px black;
+}
+
+span.title {
+	background-color:black;
+	color:#666666;
+	font-size:50px;
+	display: inline-block; 
+	padding: 10px 10px; 
+	margin: 5px; 
+	font-weight: bold; 
+	border-radius: 5px;
+	border: solid 2px #666666;
+}
+
+span.timertext {
+	background-color:green;
+	color:#FFFFFF;
+	font-size:70px;
+	display: inline-block; 
+	padding: 10px 10px; 
+	margin: 5px; 
+	font-weight: bold; 
+	border-radius: 5px;
+}
+
+span.playstate {
+	background-color:green;
+	color:#FFFFFF;
+	font-size:12px;
+	display: inline-block; 
+	padding: 10px 10px; 
+	margin: 5px; 
+	font-weight: bold; 
+	border-radius: 5px;
+}
+
+span.temptext {
+	background-color:green;
+	color:#FFFFFF;
+	font-size:40px;
+	display: inline-block; 
+	padding: 10px 10px; 
+	margin: 5px; 
+	font-weight: bold; 
+	border-radius: 5px;
+}
+
+span.roomname {
+	background-color:green;
+	color:#FFFFFF;
+	font-size:40px;
+	display: inline-block; 
+	padding: 10px 10px; 
+	margin: 5px; 
+	font-weight: bold; 
+	border-radius: 5px;
+}
+
+span.lightroom {
+	background-color:green;
+	color:#FFFFFF;
+	font-size:30px;
+	display: inline-block; 
+	padding: 10px 10px; 
+	margin: 5px; 
+	font-weight: bold; 
+	border-radius: 5px;
+}
+
+
+span.device {
+	background-color:#666666;
+	color:#FFFFFF;
+	font-size:20px;
+	display: inline-block; 
+	padding: 3px 10px; 
+	margin: 5px; 
+	font-weight: bold; 
+	border-radius: 5px;
+}
+
+span.sensor {
+	background-color:#666666;
+	color:#FFFFFF;
+	font-size:18px;
+	display: inline-block; 
+	padding: 3px 10px; 
+	margin: 0px 5px; 
+	font-weight: bold; 
+	border-radius: 5px;
+}
+
+
+span.screentitle {
+	background-color:white;
+	font-family: 'Baloo', sans-serif;
+	color:#000066;
+	font-size:30px;
+	display: inline-block; 
+	padding: 10px 30px; 
+	margin: 5px; 
+	border-radius: 5px;
+}
+
+
+
+span.menutext {
+	background-color:white;
+	color:#000066;
+	font-size:24px;
+	display: inline-block; 
+	padding: 10px 10px; 
+	margin: 5px; 
+	font-weight: bold; 
+	border-radius: 5px;
+}
+
+span.datetime {
+	background-color:#009900;
+	color:#FFFFFF;
+	font-size:16px;
+	display: inline-block; 
+	padding: 5px 5px; 
+	margin: 0px 5px; 
+	border-radius: 5px;
+}
+
+
+div.audioroomcontainer {
+	background-color:#66FF99;
+	float:left;
+	height:200px;
+	padding-top:10px;
+	overflow:auto;
+	font-size: 25px;
+    margin: 0 0 10px 10px;
+}
+
+div.nightmodecontainer {
+	background-color:#666666;
+	width:150px;
+	float:left;
+	height:200px;
+	padding-top:10px;
+	overflow:auto;
+	font-size: 25px;
+    margin: 0 0 10px 10px;
+}
+
+
+div.notificationpane {
+	background-color:#000000;
+	width:100%;
+	font-size: 50px;
+	color:#666666;
+	box-shadow:inset 0px 0px 0px 1px black;
+}
+
+div.nightnotificationpane {
+	background-color:grey;
+	width:100%;
+	font-size: 32px;
+	box-shadow:inset 0px 0px 0px 1px black;
+
+}
+
+div.toplinks {
+	top:0px;
+	left:0px;
+	width:100%;
+	font-size: 30px;
+	box-shadow:inset 0px 0px 0px 1px black;
+	opacity:1;
+}
+
+div.popuppanel {
+	background-color:grey;
+	width:100vw;
+	float:left;
+	padding-top:10px;
+	overflow:auto;
+	color:white;
+	font-size: 3vw;
+	box-shadow:inset 0px 0px 0px 1px black;
+}
+
+
+
+
+
+
+
+

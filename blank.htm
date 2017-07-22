@@ -1,0 +1,529 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<head>
+<title>Home Control</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=0" /> 
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<link rel="shortcut icon" href="favicon.ico" />
+		<link rel="apple-touch-icon" href="iphone-icon.png"/>
+		<link rel="icon" sizes="196x196" href="logo.png">
+		<link rel="icon" sizes="192x192" href="logo192.png">
+		<link rel="stylesheet" media="(orientation: portrait)" href="portrait.css">
+		<link rel="stylesheet" media="(orientation: landscape)" href="landscape.css">
+		<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+
+<script language="JavaScript" type="text/JavaScript">
+<!--
+<!--
+
+// ------------------------------------------------------------- VARIABLES
+
+var minutes=0;
+var notificationtime=0;
+var notificationrunning=0;
+var highhumidity=0;
+var devicestodisplay =[45,44,833];
+var huetodisplay = [4,5];
+var nod=0;
+var domoticzurl="192.168.1.163";
+var domoticzport="8080";
+var domoticzusername="YW50aGVh";  // See domoticz website on how you can turn your username and 
+var domoticzpassword="YmlhbmNh";  // password into these 'scrambled' characters.
+var sonosurl="192.168.1.163";
+var sonosport="5005";
+var room="Living Room";
+var roompos=0;
+var maxroompos=4;
+var rooms=["Living Room","Bathroom","Kitchen","Harry's Room","Chester's Room"]
+
+// ------------------------------------------------------------- END OF VARIABLES
+
+// ------------------------------------------------------------- START UP PROCEDURES
+
+window.onload = function() {
+//code which runs once the basis of the user interface is ready
+	updatetemparea("intemp","255")	
+	getalldevices();
+	updatenotification(11);
+	}
+	
+// --------------------------------------------------------------- THINGS TO DO REPEATEDLY
+	
+window.setInterval(function(){
+//these functions will run every 1 second (things which need updating regularly)
+	updatealldevices();
+	updatenotification(11);
+	}, 1000);
+
+window.setInterval(function(){
+//these functions will run every 20 seconds (things which dont need updating every second)
+	updatetemparea("intemp","255")
+	}, 20000);
+	
+// -------------------------------------------------------------------------------------
+
+function speak(textToSpeak) {
+// speaks whatever string is sent to the function
+   var newUtterance = new SpeechSynthesisUtterance();
+   newUtterance.text = textToSpeak;
+   window.speechSynthesis.speak(newUtterance);
+}
+
+function getalldevices(){
+// reads each number in the devicestodisplay array and prepares the interface
+fLen = devicestodisplay.length;
+for (i = 0; i < fLen; i++) {
+	preparediv(devicestodisplay[i]);
+	getdevice(devicestodisplay[i]);
+	}
+}
+
+function getdevice(idx){
+// 
+	console.log("getting device idx" + idx);
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://"+domoticzurl+":"+domoticzport+"/json.htm?username="+domoticzusername+"&password="+domoticzpassword+"&type=devices&rid="+idx;
+	xmlhttp.onreadystatechange = function() {
+		console.log(devicestodisplay[i] + "   " +xmlhttp.readyState)
+		if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+			var myArr = JSON.parse(xmlhttp.responseText);
+	   		devicename = myArr.result[0].Name;
+			devicestatus = myArr.result[0].Status;
+	   		console.log(devicename + "(" + devicestatus+")");
+			adddevice(idx,devicename,devicestatus);
+			}
+		}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+function preparediv(deviceidx){
+// creates a div for the individual device to be presented inside
+nod=nod+1;
+var div = document.createElement("div");
+div.className = 'devicecontainer';
+div.id = "DEVICE"+deviceidx;
+document.getElementById("devicesdiv").appendChild(div);
+}
+
+function updatealldevices(){
+fLen = devicestodisplay.length;
+for (i = 0; i < fLen; i++) {
+	updatedevice(devicestodisplay[i]);
+	}
+}
+
+function adddevice(deviceidx,devicenametext,devicestatus){
+// adds a device to the interface so that clicking toggles the domoticz switch
+nod=nod+1;
+var div = document.createElement("div");
+div.className = 'devicecontainer';
+div.innerHTML = devicenametext;
+div.id = "DEVICE"+deviceidx;
+console.log("-------------"+div.id);
+//document.getElementById("devicesdiv").appendChild(div);
+document.getElementById(div.id).addEventListener('click', function() {
+ { toggle(deviceidx); };
+}, false);
+}
+
+function updatedevice(idx){
+//this updates the div to show the current state of the device.   This needs to be run once every second.
+	var location="DEVICE"+idx;
+	console.log("checking status of idx "+idx);
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://"+domoticzurl+":"+domoticzport+"/json.htm?username="+domoticzusername+"&password="+domoticzpassword+"&type=devices&rid="+idx;
+	var onoff;
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			onoff = myArr.result[0].Status;
+			devicename = myArr.result[0].Name;
+       // myFunction(myArr);
+	   	document.getElementById(location).innerHTML='<div class="devicename">'+devicename+'</span>';
+    	}
+		if (onoff == "On") {
+		document.getElementById(location).className = "deviceon";
+		} 
+		if (onoff == "Off") {
+		document.getElementById(location).className = "deviceoff";
+		}
+		if (onoff == "Open") {
+		document.getElementById(location).style.background  = "deviceon";
+		} 
+		if (onoff == "Closed") {
+		document.getElementById(location).style.background = "deviceoff";
+		}
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+function groupoff(group){
+//turns a group of hue lights off
+	execute('PUT', 'http://192.168.1.73/api/newdeveloper/groups/'+group+'/action', '{"on":false}');
+}
+
+function switchon(devicecode){
+//turns a domoticz switch on
+	execute('PUT', 'http://'+domoticzurl+':'+domoticzport+'/json.htm?username='+domoticzusername+'&password='+domoticzpassword+'&type=command&param=switchlight&idx='+devicecode+'&switchcmd=On', '');
+}
+
+function switchoff(devicecode){
+//turns a domoticz switch off
+	execute('PUT', 'http://'+domoticzurl+':'+domoticzport+'/json.htm?username='+domoticzusername+'&password='+domoticzpassword+'&type=command&param=switchlight&idx='+devicecode+'&switchcmd=Off', '');
+}
+
+function toggle(devicecode){
+//tuens the domoticz device on if it was recorded as off and vice versa
+	execute('PUT', 'http://'+domoticzurl+':'+domoticzport+'/json.htm?username='+domoticzusername+'&password='+domoticzpassword+'&type=command&param=switchlight&idx='+devicecode+'&switchcmd=Toggle', '');
+}
+
+function dim(devicecode,dimlevel){
+//dims the domoticz device to a certain level (either 0 to 100, 0 to 32 etc)
+	execute('PUT', 'http://'+domoticzurl+':'+domoticzport+'/json.htm?username='+domoticzusername+'&password='+domoticzpassword+'&type=command&param=switchlight&idx='+devicecode+'&switchcmd=Set%20Level&level='+dimlevel, '');
+}
+
+function lightoff(light){
+//switches a hue light off
+	execute('PUT', 'http://192.168.1.73/api/newdeveloper/lights/'+light+'/state', '{"on":false}');
+}
+
+function lightmax(light){
+//sets a hue light to max brightness and min saturation (bright white)
+	execute('PUT', 'http://192.168.1.73/api/newdeveloper/lights/'+light+'/state', '{"on":true,"bri":255,"sat":0,"hue":0}');
+}
+
+function groupcontrol(group,hue,bri,sat){
+//sets the hue group to a specific hue, brightness and saturation.  Also turns the group on.
+	execute('PUT', 'http://192.168.1.73/api/newdeveloper/groups/'+group+'/action', '{"on":true,"bri":'+bri+',"sat":'+sat+',"hue":'+hue+'}');
+}
+
+function scene(scenecode){
+//activates a scene stored in hue bridge.  Assumes scene has been set in a particular room (so ALL rooms are selected e.g. groups/0)
+	execute('PUT', 'http://192.168.1.73/api/newdeveloper/groups/0/action', '{"scene":"'+scenecode+'"}');
+}
+function groupmax(group){
+//sets a sepcific group number to max brightness and white (you need to create a group for this to work)
+	execute('PUT', 'http://192.168.1.73/api/newdeveloper/groups/'+group+'/action', '{"on":true,"bri":255,"sat":0,"hue":0}');
+}
+
+function clearnotification(idx){
+//if a variable is being used to show a user friendly notification, this clears out the text in that variable.
+	execute('PUT', "http://"+domoticzurl+":"+domoticzport+"/json.htm?username="+domoticzusername+"&password="+domoticzpassword+"&type=command&param=updateuservariable&idx="+idx+"&vname=LastEvent&vtype=2&vvalue=%00", '');
+}
+
+
+function execute($method,$url,$message){
+//used to send commands from the user interface
+xmlhttp=new XMLHttpRequest();
+xmlhttp.open($method,$url,true)
+xmlhttp.send($message);
+}
+
+function updatenotification(idx){
+// this function checks the variable you specify.  If not empty it will show the contents on the screen.  used as a user friendly prompt from domoticz
+	console.log("checking status of idx "+idx)
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://"+domoticzurl+":"+domoticzport+"/json.htm?username="+domoticzusername+"&password="+domoticzpassword+"&type=command&param=getuservariable&idx="+idx;
+	var textentry
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			textentry = myArr.result[0].Value;
+       // myFunction(myArr);
+    	
+		document.getElementById("notification").innerHTML = textentry;
+		}
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+function checkifnightmode(idx){
+// this checks to see if the idx is on above.  if it is, it shows a special div which tells the user that night mode is enabled,
+	console.log("checking to see if it is night mode "+idx)
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://"+domoticzurl+":"+domoticzport+"/json.htm?username="+domoticzusername+"&password="+domoticzpassword+"&type=devices&rid="+idx;
+	var onoff
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			onoff = myArr.result[0].Status;
+       // myFunction(myArr);
+    	}
+		if (onoff == "On") {
+    document.getElementById('nightactive').style.display = 'block';
+   
+		} else {
+		 document.getElementById('nightactive').style.display = 'none';
+		 }
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+function checkiflocked(idx){
+//if the switch that tells domoticz that you have left your home is on, this script can automatically take the interface to a different html page.
+	console.log("checking to see if leaving is on "+idx)
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://"+domoticzurl+":"+domoticzport+"/json.htm?username="+domoticzusername+"&password="+domoticzpassword+"&type=devices&rid="+idx;
+	var onoff
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			onoff = myArr.result[0].Status;
+       // myFunction(myArr);
+    	}
+		if (onoff == "On") {
+		MM_goToURL('parent','locked.htm');	
+		} else {}
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+function myFunction(arr) {
+    var out = "";
+    out += arr[0].result.Status;
+    document.getElementById("id01").innerHTML = out;
+}
+
+function refreshtimer(idx){
+// this updates the timer - a specific variable is used in domoticz for this - set one up and change it to 2 if you want to use this.
+	console.log("checking to see if timer is working "+idx)
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://"+domoticzurl+":"+domoticzport+"/json.htm?username="+domoticzusername+"&password="+domoticzpassword+"&type=devices&rid="+idx;
+	var onoff
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			onoff = myArr.result[0].Status;
+			console.log("timer is "+onoff)
+       // myFunction(myArr);
+    	}
+		if (onoff == "On") {
+			updatetimer(14);
+			}
+		if (onoff == "Off") {
+			document.getElementById("timerstatus").innerHTML = '-';
+		}
+		
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+function updatetimer(idx){
+	var timerstatus
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://"+domoticzurl+":"+domoticzport+"/json.htm?username="+domoticzusername+"&password="+domoticzpassword+"&type=command&param=getuservariable&idx="+idx;
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			outstatus = myArr.result[0].Value;
+			document.getElementById("timerstatus").innerHTML = outstatus + 'm'
+    	}
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+
+function settimer(minutes){
+setminutes = minutes
+	ticker=0
+}
+
+function starttimer(idx,minutes) {
+//sends the number of minutes to the variable in Domoticz
+	execute('PUT', 'http://'+domoticzurl+':'+domoticzport+'/json.htm?username='+domoticzusername+'&password='+domoticzpassword+'&type=command&param=updateuservariable&idx='+idx+'&vname=Timer&vtype=Integer&vvalue=' + minutes, '');
+	switchon(666);
+	speak("Timer set for " + minutes + "minutes and is now running.");
+	ticker=0;
+}
+
+function addminutes(addmin) {
+	minutes=minutes+addmin;
+    document.getElementById('minutestostart').innerHTML= minutes;
+}
+
+
+function timercancel(idx){
+	execute('PUT', 'http://'+domoticzurl+':'+domoticzport+'/json.htm?username='+domoticzusername+'&password='+domoticzpassword+'&type=command&param=updateuservariable&idx='+idx+'&vname=Timer&vtype=Integer&vvalue=0', '');
+	switchoff(666);
+	speak("Timer cancelled.");
+	ticker=0;
+}
+
+function updateambientlight(idx){
+	var instatus
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://"+domoticzurl+":"+domoticzport+"/json.htm?username="+domoticzusername+"&password="+domoticzpassword+"&type=devices&rid="+idx;
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			instatus = myArr.result[0].Data;
+			document.getElementById("ambientlight").innerHTML = instatus
+    	}
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+function updatetemparea(divname,idxcode){
+	var instatus
+	var outstatus
+	var weatherstatus
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://"+domoticzurl+":"+domoticzport+"/json.htm?username="+domoticzusername+"&password="+domoticzpassword+"&type=devices&rid="+idxcode;
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			temptext =  myArr.result[0].Temp;
+			humtext = myArr.result[0].Humidity;
+			console.log(outstatus)
+			document.getElementById(divname).innerHTML = temptext + "C  " + humtext + "%"
+    	}
+	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+function MM_callJS(jsStr) { //v2.0
+  return eval(jsStr)
+}
+
+function showscenespanel() {
+    document.getElementById('scenespanel').style.display = 'block';
+}
+
+function showtimerpanel() {
+console.log("Showing timer panel");
+    document.getElementById('timerpanel').style.display = 'block';
+}
+
+function hidetimerpanel() {
+    document.getElementById('timerpanel').style.display = 'none';
+}
+
+function hidescenespanel() {
+    document.getElementById('scenespanel').style.display = 'none';
+}
+
+function sonos(command){
+	console.log("Sending Sonos Command "+command)
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://"+domoticzurl+":"+sonosport+"/"+ room +"/"+command;
+	xmlhttp.onreadystatechange = function() {
+    	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+ticker=0;
+}
+
+function updatesonos(room){
+	console.log("checking url of album art for "+room);
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://"+sonosurl+":"+sonosport+"/"+room+"/state";
+	console.log(url);
+	var art;
+	var track;
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			art = myArr.currentTrack.absoluteAlbumArtUri;
+			track = myArr.currentTrack.title;
+			duration = myArr.currentTrack.duration;
+			if (track==undefined) {
+				track = "TV / AUX";
+				art = "assets/pictures/sonos.jpg";
+				}
+		    var longtrack = track;
+			if (track.substring(0, 7) == "x-sonos" || track == "Streaming from http://radiomonitor.com"){
+				track = "Radio Stream"
+				}
+			playing = myArr.playbackState;
+			elapsed = myArr.elapsedTimeFormatted;
+       // myFunction(myArr);
+	   console.log(track);
+	   console.log('"url('+art+')"');
+	   document.getElementById("Trackname").innerHTML=track;
+	   document.getElementById("Trackstatus").innerHTML='<span class="playstate">' + playing + ' ' + elapsed + '</span>';
+	   if (longtrack != previoustrack) {
+	   	document.getElementById("Trackstatus").innerHTML='<span class="playstate">' + playing + ' ' + elapsed + '</span>';
+		document.getElementById("Trackname").innerHTML=track;
+		console.log(art);
+		document.getElementById("Track2").style.backgroundImage=("url("+art+")");
+		document.getElementById("Track2").style.backgroundSize="100% 100%";
+		if (track != "TV Sound" && track != "Radio Stream") {
+			document.getElementById("Track").style.backgroundImage=("url("+art+")");
+			document.getElementById("Track").style.backgroundSize="100% 100%";
+			} else {
+			document.getElementById("Track").style.backgroundImage=("url(assets/pictures/bricks.jpg)");
+			document.getElementById("Track").style.backgroundSize="100% 100%";
+			}			
+		previoustrack = track
+		}
+	}}
+	
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+
+//-->
+</script>
+
+
+<body>
+
+<audio id="scene" src="assets/sounds/beep2.mp3" preload="auto"></audio>
+<div align="center" class="areatopbackground"></div>
+<div align="center" class="areatop">
+	<a href="index.htm"><div class="iconon"><img src="assets/icons/home.png" width="100%" height="100%"></div></a>
+	<a href="lights.htm"><div class="iconoff"><img src="assets/icons/lights.png" width="90%" height="90%"></div></a>
+	<a href="devices.htm"><div class="iconoff"><img src="assets/icons/devices.png" width="90%" height="90%"></div></a>
+	<a href="audiotrial.htm"><div class="iconoff"><img src="assets/icons/audio.png" width="90%" height="90%"></div></a>
+	<a href="climate.htm"><div class="iconoff"><img src="assets/icons/climate.png" width="90%" height="90%"></div></a>
+	<a href="security.htm"><div class="iconoff"><img src="assets/icons/security.png" width="90%" height="90%"></div></a>
+	<a href="activities.htm"><div class="iconoff"><img src="assets/icons/more.png" width="90%" height="90%"></div></a>
+</div>
+
+<div class="arealeft">
+
+	<span class="screentitle">Home</span>
+
+	<a href="javascript:;" onclick="document.getElementById('scene').play();switchon(263);"><div align="center" id="heatingcontrols" class="largekeycontainer">Heating boost 30min</div></a>
+
+	<div class="standardcontainer" id="humidity"><span class="title">Indoor</span><br><span class="temptext" id="intemp" align="center"> 0.0 C, 0%</span></div>
+
+	<div align="center" id="heatingcontrols" class="standardcontainer"><span class="title">Kitchen</span><br><a href="javascript:;" onclick="document.getElementById('scene').play();dim(46,32);"><span class="key">Max</span></a><a href="javascript:;" onclick="document.getElementById('scene').play();switchoff(46);"><span class="key">Off</span></a></div>
+
+	<div align="center" id="heatingcontrols" class="standardcontainer"><span class="title">Overheads</span><br><a href="javascript:;" onclick="document.getElementById('scene').play();switchon(11);switchon(12);"><span class="key">Max</span></a><a href="javascript:;" onclick="document.getElementById('scene').play();switchoff(11);switchon(12);"><span class="key">Off</span></a></div>
+
+</div>
+
+<div class="arearight">
+
+	<span class="screentitle">Other devices</span>
+
+	<div id="devicesdiv"></div>
+
+</div>
+
+<div id="notification" align="center" class="notificationpane" onClick="clearnotification(11);"></div>
+
+</body>
+
+</html>

@@ -1,0 +1,633 @@
+body {
+
+	font-family: 'Raleway', sans-serif;
+	margin: 0 0 0 0;
+    padding: 0 0 0 0 ;
+	background: #333333;
+	background-image:url(assets/pictures/bricks.jpg);
+	background-size: cover;
+	
+}
+
+span {
+
+	display: inline-block; 
+
+
+}
+
+div.areatopbackground{
+	background-color:#666666;
+	position:absolute;
+	width:98vw;
+	height:14vw;
+	float:left;
+	padding-top:2vh;
+	padding-left:2vw;
+	overflow:auto;
+	color:white;
+	font-size: 30px;
+	text-align:left;
+	opacity:0.5;
+}
+div.areatop{
+	position:absolute;
+	width:98vw;
+	height:14vw;
+	float:left;
+	padding-top:2vh;
+	padding-left:1vw;
+	overflow:auto;
+	color:white;
+	font-size: 30px;
+	text-align:left;
+}
+
+div.arealeft{
+	background-color:#666666;
+	position:absolute;
+	top:10vh;
+	width:98vw;
+	height:50vh;
+	padding-top:2vh;
+	padding-left:2vw;
+	overflow:auto;
+	color:grey;
+	font-size: 30px;
+	text-align:left;
+}
+
+div.areaall{
+	background-color:#666666;
+	position:absolute;
+	top:15vw;
+	width:96vw;
+	height:84vh;
+	padding-top:2vh;
+	padding-left:2vw;
+	padding:10px 10px 10px 10px;
+	float:left;
+	overflow:auto;
+	color:grey;
+	font-size: 30px;
+	text-align:left;
+}
+
+div.arearight{
+	position:absolute;
+	top:62vh;
+	background-color:#666666;
+	width:98vw;
+	padding-top:2vh;
+	padding-left:1vw;
+	padding-right:1vw;
+	overflow:auto;
+	color:grey;
+	font-size: 30px;
+	text-align:left;
+}
+
+
+div.standardcontainer {
+	background-color:grey;
+	position:relative;
+	width:45%;
+	margin:2% 2% 2% 2%;
+	height:10vh;
+	float:left;
+	padding-top:10px;
+	overflow:hidden;
+	color:grey;
+	font-size: 20px;
+	text-align:center;
+	outline: 1px solid white;
+    outline-offset: -1px;
+	
+}
+
+div.largekeycontainer {
+	background-color:white;
+	color:black;
+	position:relative;
+	width:45%;
+	margin:2% 2% 2% 2%;
+	height:10vh;
+	float:left;
+	padding-top:10px;
+	overflow:hidden;
+	font-size: 5vw;
+	text-align:center;
+	
+}
+
+div.doublecontainer {
+	background-color:grey;
+	position:relative;
+	width:94%;
+	margin:2% 2% 2% 2%;
+	height:150px;
+	float:left;
+	padding-top:10px;
+	overflow:scroll;
+	color:grey;
+	font-size: 20px;
+	text-align:center;
+	outline: 1px solid white;
+    outline-offset: -1px;
+	
+}
+
+div.quadruplecontainer {
+	background-color:grey;
+	position:relative;
+	width:94%;
+	margin:2% 2% 2% 2%;
+	height:150px;
+	float:left;
+	padding-top:10px;
+	overflow:scroll;
+	color:grey;
+	font-size: 30px;
+	text-align:center;
+	outline: 1px solid white;
+    outline-offset: -1px;
+	
+}
+
+div.trackstatus {
+	position:absolute;
+	left:2vw;
+	top:24vh;
+	width:30vw;
+	height:6vh;
+	float:left;
+	padding-top:5px;
+	background:white;
+	font-size: 20vw;
+	opacity:1;
+	overflow:hidden;
+	
+}
+
+div.albumcontainer {
+	position:absolute;
+	top:5vh;
+	left:2vw;
+	width:30vw;
+	height:30vw;
+	background-color:white;
+	float:left;
+	padding-top:0px;
+	color:white;
+	font-size: 3vw;
+		outline: 1px solid white;
+    outline-offset: -1px;
+}
+
+
+div.frostedcontainer {
+	background-color:grey;
+	filter: blur(10px) brightness(75%);
+	width:100%;
+	height:100%;
+	float:left;
+	padding-top:0px;
+	color:white;
+	font-size: 3vw;
+}
+
+span.roomname {
+	background-color:white;
+	color:black;
+	font-size:7vw;
+	display: inline-block; 
+	padding: 1vw 1vw 1vw 1vw; 
+	margin: 5px; 
+	font-weight: bold; 
+}
+
+span.playstate {
+	background-color:white;
+	color:black;
+	font-size:3vw;
+	display: inline-block; 
+	font-weight: bold; 
+}
+
+span.title {
+	color:white;
+	font-size:15px;
+	display: inline-block; 
+	padding: 1px 1px; 
+	width:100%; 
+	font-weight: bold; 
+}
+
+
+
+span.screentitle {
+	background-color:grey;
+	color:white;
+	font-size:20px;
+	width:100%;
+	text-align:center;
+}
+
+div.devicecontainer {
+	background-color:#666666;
+	color:#FFFFFF;
+	width:50%;
+	height:6vh;
+	float:left;
+	padding-top:10px;
+	overflow:auto;
+	font-size: 3vh;
+	text-align:center;
+	outline: 1px solid white;
+    outline-offset: -1px;
+}
+
+
+div.deviceon {
+	background-color:red;
+	width:100%;
+	height:100%;
+	float:left;
+	overflow:hidden;
+	outline: 1px solid white;
+    outline-offset: -1px;
+}
+
+div.deviceoff {
+	background-color:#333333;
+	width:100%;
+	height:100%;
+	float:left;
+	overflow:hidden;
+	outline: 1px solid white;
+    outline-offset: -1px;
+}
+
+div.devicename {
+	background-color:#333333;
+	overflow:hidden;
+	width:80%;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-left:5px;
+	height:100%;
+	float:left;
+	overflow:auto;
+	color:white;
+	font-size: 20px;
+	text-align:left;
+	outline: 1px solid white;
+    outline-offset: -1px;
+}
+
+
+
+span.key {
+	background-color:grey;
+	color:white;
+	font-size:20px;
+	display: inline-block; 
+	padding-top:5px;
+	height:40px;
+	width:50%;
+	font-weight: bold; 
+	outline: 1px solid white;
+    outline-offset: -1px;
+}
+
+
+span.temptext {
+	color:#FFFFFF;
+	font-size:5vw;
+	display: inline-block;  
+	height:70px;
+	width:100%;
+	font-weight: bold; 
+}
+
+span.timertext {
+	color:#FFFFFF;
+	font-size:5vw;
+	display: inline-block;  
+	height:70px;
+	width:100%;
+	font-weight: bold; 
+}
+
+div.iconoff {
+	float:left;
+	background-color::#666666;
+	height:10vw;
+	width:10vw;
+	padding:1vw 1vw 1vw 1vw;
+	}
+
+div.iconon {
+	float:left;
+	background-color:red;
+	height:10vw;
+	width:10vw;
+	padding:1vw 1vw 1vw 1vw;
+}
+
+div.sceneicon {
+	float:left;
+	height:8vw;
+	width:8vw;
+	padding:1vw 1vw 1vw 1vw;
+}
+
+div.notificationpane {
+	background-color:green;
+	position:fixed;
+	bottom:00px;
+	width:100%;
+	font-size: 28px;
+	color:white;
+}
+
+div.timernow {
+	background-color:white;
+	position:relative;
+	width:90%;
+	margin:5% 2% 2% 5%;
+	height:50px;
+	float:left;
+	padding-top:5px;
+	overflow:auto;
+	color:grey;
+	font-size: 40px;
+	text-align:center;
+}
+
+div.audioactivitycontainer {
+	position:absolute;
+	left:40vw;
+	width:40vw;
+	height:15vh;
+	float:left;
+	padding-top:0px;
+	color:white;
+	font-size: 2vw;
+}
+
+div.trackcontainer {
+	position:absolute;
+	left:40vw;
+	top:15vh;
+	width:40vw;
+	height:25vh;
+	float:left;
+	padding-top:0px;
+	color:white;
+	font-size: 7vw;
+	opacity:1;
+}
+
+div.audiocontrols {
+	position:absolute;
+	left:2vw;
+	top:40vh;
+	width:92vw;
+	height:10vh;
+	float:left;
+	padding-top:0px;
+	color:white;
+	font-size: 3vw;
+}
+
+
+
+div.camera {
+	background-color:grey;
+	width:50vw;
+	float:left;
+	padding-top:0px;
+	color:white;
+	font-size: 3vw;
+}
+
+div.camcontrols {
+	background-color:green;
+	width:200px;
+	float:right;
+	padding-top:0px;
+	color:white;
+	font-size: 3vw;
+}
+
+
+
+div.nightclock {
+	background-color:#333333;
+	position:relative;
+	width:100%;
+	float:left;
+	padding-top:10px;
+	overflow:auto;
+	color:#666666;
+	font-size: 5vw;
+	text-align:center;
+	box-shadow:inset 0px 0px 0px 1px black;
+}
+
+
+
+
+
+span.audiokey {
+	background-color:green;
+	color:#FFFFFF;
+	font-size:20px;
+	display: inline-block; 
+	padding: 5px 5px; 
+	height:40px;
+	width:200px;
+	margin: 5px; 
+	font-weight: bold; 
+	border-radius: 5px;
+}
+
+
+
+
+
+
+span.commandtext {
+	background-color:green;
+	color:#FFFFFF;
+	font-size:30px;
+	display: inline-block; 
+	padding: 5px 5px; 
+	height:70px;
+	width:90%;
+	margin: 5px; 
+	font-weight: bold; 
+	border-radius: 5px;
+}
+
+
+
+span.lightroom {
+	background-color:green;
+	color:#FFFFFF;
+	font-size:30px;
+	display: inline-block; 
+	padding: 10px 10px; 
+	margin: 5px; 
+	font-weight: bold; 
+	border-radius: 5px;
+}
+
+
+
+
+span.sensor {
+	background-color:white;
+	color:black;
+	font-size:3vw;
+	display: inline-block; 
+	padding: 3px 10px; 
+	margin: 0px 5px; 
+	font-weight: bold; 
+}
+
+
+span.sensorstate {
+	background-color:green;
+	color:black;
+	font-size:3vw;
+	display: inline-block; 
+	padding: 3px 10px; 
+	margin: 0px 5px; 
+	font-weight: bold; 
+}
+
+span.datetime {
+	background-color:black;
+	color:white;
+	font-size:3vw;
+	display: inline-block; 
+	padding: 3px 10px; 
+	margin: 0px 5px; 
+	font-weight: bold; 
+}
+
+
+
+
+
+span.menutext {
+	background-color:white;
+	color:green;
+	font-size:30px;
+	display: inline-block; 
+	padding: 5px 5px; 
+	margin:12px 5px 5px 5px; 
+	font-weight: bold; 
+	border-radius: 5px;
+	border:2px solid green;
+}
+
+
+
+
+div.audioroomcontainer {
+	background-color:#66FF99;
+	float:left;
+	height:100px;
+	padding-top:10px;
+	overflow:auto;
+	font-size: 4vw;
+    margin: 0 0 10px 10px;
+}
+
+div.nightmodecontainer {
+	background-color:#666666;
+	width:150px;
+	float:left;
+	height:200px;
+	padding-top:10px;
+	overflow:auto;
+	font-size: 25px;
+    margin: 0 0 10px 10px;
+}
+
+
+
+
+div.lowernotificationpane {
+	position:fixed;
+	background-color:green;
+	width:90%;
+	height:90%;
+	top:5%;
+	left:5%;
+	font-size: 90px;
+	color:white;
+	opacity:1;
+}
+
+div.lowernotificationclose{
+	position:absolute;
+	background-color:green;
+	width:100%;
+	height:20%;
+	bottom:0;
+	font-size: 90px;
+	color:white;
+	opacity:1;
+}
+
+span.closeit {
+	background-color:grey;
+	color:#FFFFFF;
+	font-size:70px;
+	display: inline-block; 
+	padding: 10px 10px; 
+	margin: 5px; 
+	font-weight: bold; 
+	border-radius: 5px;
+}
+
+div.nightnotificationpane {
+	background-color:grey;
+	width:100%;
+	font-size: 32px;
+	box-shadow:inset 0px 0px 0px 1px black;
+
+}
+
+div.toplinks {
+	background: white;
+	top:0px;
+	left:0px;
+	width:100%;
+	height:70px;
+	font-size: 30px;
+
+}
+
+div.popuppanel {
+	background: green;
+	width:92%;
+	margin:2% 2% 2% 2%;
+	float:left;
+	padding-top:10px;
+	overflow:auto;
+	color:white;
+	font-size: 30px;
+}
+
+
+
+
+
+
+
+
