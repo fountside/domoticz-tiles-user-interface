@@ -29,11 +29,18 @@
 var minutes=0;
 var notificationtime=0;
 var notificationrunning=0;
-var highhumidity=0;
-var devicestodisplay =[45,44,833,273,134,35,136,140];
+//var highhumidity=0;
+//var devicestodisplay =[45,44,833,273,134,35,136,140];
 var nod=0;
 var domoticzurl="192.168.1.163";
 var domoticzport="8080";
+var previoustrack = "xxx";
+var sonosurl="192.168.1.163";
+var sonosport="5005";
+var room="Living Room";
+var roompos=0;
+var maxroompos=4;
+var rooms=["Living Room","Bathroom","Kitchen","Harry's Room","Chester's Room"]
 
 function MM_goToURL() { //v3.0
   var i, args=MM_goToURL.arguments; document.MM_returnValue = false;
@@ -173,28 +180,16 @@ xmlhttp.open($method,$url,true)
 xmlhttp.send($message);
 }
 window.onload = function() {
-    // all of your code goes in here
-    // it runs after the DOM is built
-	hidescenespanel();
-	hidetimerpanel();
-	updatetemparea("outtemp","1101")
-	updatetemparea("intemp","255")	
-	refreshtimer();
-	getalldevices();
-	checkifnightmode();
-	updateambientlight();
 	updatenotification(11);
+	updatesonos(room);
 	}
 	
 window.setInterval(function(){
-	updatealldevices();
 	updatenotification(11);
-	refreshtimer();
+	updatesonos(room);
 	}, 1000);
 
 window.setInterval(function(){
-	updatetemparea("outtemp","1101")
-	updatetemparea("intemp","255")
 	}, 20000);
 
 	
@@ -528,6 +523,76 @@ function hidescenespanel() {
     document.getElementById('scenespanel').style.display = 'none';
 }
 
+function sonos(command){
+	console.log("Sending Sonos Command "+command)
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://"+domoticzurl+":"+sonosport+"/"+ room +"/"+command;
+	xmlhttp.onreadystatechange = function() {
+    	}
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+ticker=0;
+}
+
+function updatesonos(room){
+	console.log("checking url of album art for "+room);
+	var xmlhttp = new XMLHttpRequest();
+	var url = "http://"+sonosurl+":"+sonosport+"/"+room+"/state";
+	console.log(url);
+	var art;
+	var track;
+	xmlhttp.onreadystatechange = function() {
+    	if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        	var myArr = JSON.parse(xmlhttp.responseText);
+			art = myArr.currentTrack.absoluteAlbumArtUri;
+			track = myArr.currentTrack.title;
+			duration = myArr.currentTrack.duration;
+			if (track==undefined) {
+				track = "TV / AUX";
+				art = "assets/pictures/sonos.jpg";
+				}
+		    var longtrack = track;
+			if (track.substring(0, 7) == "x-sonos" || track == "Streaming from http://radiomonitor.com"){
+				track = "Radio Stream"
+				}
+			playing = myArr.playbackState;
+			elapsed = myArr.elapsedTimeFormatted;
+       // myFunction(myArr);
+	   console.log(track);
+	   console.log('"url('+art+')"');
+	   document.getElementById("Trackname").innerHTML=track;
+	   document.getElementById("Trackstatus").innerHTML='<span class="playstate">' + playing + ' ' + elapsed + '</span>';
+	   if (longtrack != previoustrack) {
+	   	document.getElementById("Trackstatus").innerHTML='<span class="playstate">' + playing + ' ' + elapsed + '</span>';
+		document.getElementById("Trackname").innerHTML=track;
+		console.log(art);
+		document.getElementById("Track2").style.backgroundImage=("url("+art+")");
+		document.getElementById("Track2").style.backgroundSize="100% 100%";
+		if (track != "TV Sound" && track != "Radio Stream") {
+			document.getElementById("Track").style.backgroundImage=("url("+art+")");
+			document.getElementById("Track").style.backgroundSize="100% 100%";
+			} else {
+			document.getElementById("Track").style.backgroundImage=("url(assets/pictures/bricks.jpg)");
+			document.getElementById("Track").style.backgroundSize="100% 100%";
+			}			
+		previoustrack = track
+		}
+	}}
+	
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+}
+
+function advanceroom () {
+	roompos = roompos +1
+	if (roompos > maxroompos) {
+		roompos = 0;
+	}
+	room = rooms[roompos];
+	document.getElementById("Roomname").innerHTML = '<span class="roomname">'+room+'</span>';
+}
+
+
 	
 //<div id="advancedpanel" align="center" class="popuppanel">
 //<div align="center" class="controlcontainer"><a href="javascript:;" onClick="toggle(45);document.getElementById('beep').play();"><img src="assets/icons/lighting-auto.png" width="128" height="128" border="0" id="lighting"></a>Lights Automation</div>
@@ -544,62 +609,47 @@ function hidescenespanel() {
 
 <body>
 
+
 <audio id="scene" src="assets/sounds/beep2.mp3" preload="auto"></audio>
 <div align="center" class="areatopbackground"></div>
 <div align="center" class="areatop">
-<a href="index.htm"><div class="iconon"><img src="assets/icons/home.png" width="100%" height="100%"></div></a>
+<a href="index.htm"><div class="iconoff"><img src="assets/icons/home.png" width="100%" height="100%"></div></a>
 <a href="lights.htm"><div class="iconoff"><img src="assets/icons/lights.png" width="90%" height="90%"></div></a>
 <a href="devices.htm"><div class="iconoff"><img src="assets/icons/devices.png" width="90%" height="90%"></div></a>
-<a href="audio.htm"><div class="iconoff"><img src="assets/icons/audio.png" width="90%" height="90%"></div></a>
+<a href="audio.htm"><div class="iconon"><img src="assets/icons/audio.png" width="90%" height="90%"></div></a>
 <a href="climate.htm"><div class="iconoff"><img src="assets/icons/climate.png" width="90%" height="90%"></div></a>
 <a href="security.htm"><div class="iconoff"><img src="assets/icons/security.png" width="90%" height="90%"></div></a>
 <a href="activities.htm"><div class="iconoff"><img src="assets/icons/more.png" width="90%" height="90%"></div></a>
-
-<div class="nightclock" id="nightactive">Night Mode<br><a href="javascript:;" onClick="switchoff(37)"><span id="title">Switch off Night Mode</span></a></div>
 </div>
 
 <div class="arealeft">
-<span class="screentitle">Home</span>
-<a href="javascript:;" onclick="showscenespanel();"><div align="center" class="largekeycontainer">Select scene</div></a>
-<div id="scenespanel" align="center" class="popuppanel">
-<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('MxMq2E03Zd1SJ3w');hidescenespanel();"><img src="assets/icons/chandelier.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
-<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('FUT5iH8zhXsuS4P');hidescenespanel();"><img src="assets/icons/television.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
-<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('1xKQFak84Z3LcPj');hidescenespanel();"><img src="assets/icons/projector.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
-<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('z8sScLoh9FVwCgN');hidescenespanel();"><img src="assets/icons/park.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
-<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('yUwt22w2837jhYN');hidescenespanel();"><img src="assets/icons/bookcase.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
-<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('Avy9HYLYdFXuUUe');hidescenespanel();"><img src="assets/icons/coffee-cup%20(1).png" width="10%" hspace="2%" vspace="2%" border="0"></a>
-<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('6mQcCzqNgSbtYM6');hidescenespanel();"><img src="assets/icons/cocktail.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
-<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('ZPMgkdVlI9dJtuy');hidescenespanel();"><img src="assets/icons/house.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
-<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);scene('RnerEYy33JB4Gys');hidescenespanel();"><img src="assets/icons/supper.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
-<a href="javascript:;" onClick="document.getElementById('scene').play();switchoff(45);groupoff(1);hidescenespanel();"><img src="assets/icons/computer-energy.png" width="10%" hspace="2%" vspace="2%" border="0"></a>
-<br><a href="javascript:;" onclick="hidescenespanel();"><span class="roomname">Close</span></a></div>
-<a href="javascript:;" onclick="document.getElementById('scene').play();switchon(263);"><div align="center" id="heatingcontrols" class="largekeycontainer">Heating boost 30min</div></a>
+<div align="center" class="frostedcontainer" id="Track"></div>
+<div align="center" class="albumcontainer" id="Track2"></div><div align="center" class="trackstatus" id="Trackstatus"></div>
 
-<a href="javascript:;" onclick="showtimerpanel();addminutes(0);"><div align="center" class="standardcontainer" id="timerbox"><span class="title">Timer</span><br><span class="timertext" id="timerstatus" align="center">0m</span></div></a>
-<div id="timerpanel" align="center" class="popuppanel">
-<div id="minutestostart" class="timernow" align="center">0m</div>
-<a href="javascript:;" onclick="timercancel();hidetimerpanel();"><span class="lightroom">Cancel</span></a>
-<a href="javascript:;" onclick="starttimer(30);hidetimerpanel();"><span class="lightroom">30m</span></a>
-<a href="javascript:;" onclick="starttimer(45);hidetimerpanel();"><span class="lightroom">45m</span></a>
-<a href="javascript:;" onclick="starttimer(60);hidetimerpanel();"><span class="lightroom">60m</span></a>
-<a href="javascript:;" onclick="addminutes(-1);"><span class="lightroom">-1</span></a>
-<a href="javascript:;" onclick="addminutes(-10);"><span class="lightroom">-10</span></a>
-<a href="javascript:;" onclick="addminutes(10);"><span class="lightroom">+10</span></a>
-<a href="javascript:;" onclick="addminutes(1);"><span class="lightroom">+1</span></a>
-<a href="javascript:;" onclick="starttimer(minutes);hidetimerpanel();"><span class="lightroom">Start</span></a>
-<a href="javascript:;" onclick="hidetimerpanel();"><span class="lightroom">Close</span></a>
-</div>
-<div class="standardcontainer" id="huelux"><span class="title">Light level</span><br><span class="temptext" id="ambientlight" align="center">0 Lux</span></div>
-<div class="standardcontainer" id="humidity"><span class="title">Indoor</span><br><span class="temptext" id="intemp" align="center"> 0.0 C, 0%</span></div>
-<div align="center" class="standardcontainer"><span class="title">Outdoor</span><br><span class="temptext" id="outtemp" align="center"> 0.0C, 0%</span></div>
+<a href="javascript:;" onClick="advanceroom();"><div  id="Roomname" align="center" class="audioactivitycontainer"><span class="roomname">Living Room</span></div></a>
+<div align="center" class="trackcontainer" id="Trackname"></div>
 
-<div align="center" id="heatingcontrols" class="standardcontainer"><span class="title">Kitchen</span><br><a href="javascript:;" onclick="document.getElementById('scene').play();dim(46,32);groupmax(17);"><span class="key">Max</span></a><a href="javascript:;" onclick="document.getElementById('scene').play();switchoff(46);groupoff(17);"><span class="key">Off</span></a></div>
-<div align="center" id="heatingcontrols" class="standardcontainer"><span class="title">Overheads</span><br><a href="javascript:;" onclick="document.getElementById('scene').play();groupmax(11);"><span class="key">Max</span></a><a href="javascript:;" onclick="document.getElementById('scene').play();groupoff(11);"><span class="key">Off</span></a></div>
+<div id="scenes" align="center" class="audiocontrols"><a href="javascript:;" onClick="sonos('previous')"><img width="50vw" src="assets/icons/icon-rew.png"></a>
+<a href="javascript:;" onClick="sonos('play')"><img width="50vw" src="assets/icons/icon-play.png"></a>
+<a href="javascript:;" onClick="sonos('pause')"><img width="50vw" src="assets/icons/icon-stop.png"></a>
+<a href="javascript:;" onClick="sonos('next')"><img width="50vw" src="assets/icons/icon-ff.png"></a>
+<a href="javascript:;" onClick="sonos('volume/-2')"><img width="50vw" src="assets/icons/icon-voldown.png"></a>
+<a href="javascript:;" onClick="sonos('volume/+2')"><img width="50vw" src="assets/icons/icon-volup.png"></a></div>
 </div>
 <div class="arearight">
-	<span class="screentitle">Other devices</span>
-	<div id="devicesdiv"></div>
+<a href="javascript:;" onClick="sonos('favorite/BBC Radio 4');"><div class="devicecontainer">Radio 4</div></a>
+<a href="javascript:;" onClick="sonos('favorite/BBC Radio 2');"><div class="devicecontainer">Radio 2</div></a>
+<a href="javascript:;" onClick="sonos('favorite/This American Life 24%2F7');"><div class="devicecontainer">This American Life</div></a>
+<a href="javascript:;" onClick="sonos('favorite/Waves Radio');"><div class="devicecontainer">Waves Radio</div></a>
+<a href="javascript:;" onClick="sonos('playlist/Harry 1');"><div class="devicecontainer">Harry 1</div></a>
+<a href="javascript:;" onClick="sonos('playlist/Becky 1');"><div class="devicecontainer">Becky 1</div></a>
+<a href="javascript:;" onClick="sonos('pauseall');"><div class="devicecontainer">Stop all players</div></a>
 </div>
+<div id="notification" align="center" class="notificationpane" onClick="clearnotification(11);"></div>
+</div>
+
+
+
 <div id="notification" align="center" class="notificationpane" onClick="clearnotification(11);"></div>
 </body>
 </html>
